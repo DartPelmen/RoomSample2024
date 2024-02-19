@@ -17,10 +17,13 @@ class CourseViewModel : ViewModel() {
 
     fun addData(context: Context, course: Course) {
         executorService.execute {
-            CourseDB.getInstance(context)
+            val id = CourseDB.getInstance(context)
                 .courseDao().add(course)
+                courses.postValue(courses.value.apply {
+                    this?.add(Course(id, course.author,course.courseName))
+                })
             //неэффективно
-            getAll(context)
+           // getAll(context)
         }
     }
 

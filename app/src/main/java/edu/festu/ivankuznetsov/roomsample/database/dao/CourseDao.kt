@@ -11,7 +11,7 @@ import edu.festu.ivankuznetsov.roomsample.database.entity.Course
 @Dao
 interface CourseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(course: Course)
+    fun add(course: Course): Long
     @Update
     fun update(course: Course)
     @Delete
@@ -19,5 +19,5 @@ interface CourseDao {
     @Query("SELECT * FROM COURSES")
     fun select():List<Course>
     @Query("SELECT * FROM COURSES WHERE courseId = :id")
-    fun getById(id:Int):Course?
+    fun getById(id:Long):Course?
 }
