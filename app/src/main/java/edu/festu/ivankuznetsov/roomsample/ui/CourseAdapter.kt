@@ -11,7 +11,7 @@ import edu.festu.ivankuznetsov.roomsample.databinding.CourseItemBinding
  * Адаптер для RecyclerView.
  * Связывает данные (массив) и UI (ячейки списка)
  * */
-class CourseAdapter: RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
+class CourseAdapter(private val clicker: (String) ->Unit = {}): RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
 
     /**
      * данные
@@ -42,13 +42,17 @@ class CourseAdapter: RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
         Log.d(TAG, "REDRAW WITH ${courses[position]}")
         holder.itemBinding.authorLabel.text = courses[position].author
         holder.itemBinding.courseLabel.text = courses[position].courseName
+
+        holder.itemView.setOnClickListener {
+            clicker(courses[position].author)
+        }
     }
     /**
      * "обслуживатель"
      * */
     inner class ViewHolder(val itemBinding: CourseItemBinding):
-        RecyclerView.ViewHolder(itemBinding.root){
-    }
+        RecyclerView.ViewHolder(itemBinding.root)
+
     companion object {
         private val TAG = CourseAdapter::class.java.simpleName
     }

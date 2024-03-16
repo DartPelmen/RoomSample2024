@@ -1,12 +1,15 @@
 package edu.festu.ivankuznetsov.roomsample
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import edu.festu.ivankuznetsov.roomsample.database.CourseDB
 import edu.festu.ivankuznetsov.roomsample.database.CourseDatabase
 import edu.festu.ivankuznetsov.roomsample.database.entity.Course
@@ -28,11 +31,30 @@ class MainActivity : AppCompatActivity() {
         database = CourseDB.getInstance(applicationContext)
         setContentView(binding.root)
 
-        adapter = CourseAdapter()
+        adapter = CourseAdapter{
+            startActivity(Intent(this@MainActivity, MainActivity2::class.java).apply {
+                this.putExtra("author",it)
+            })
+        }
         binding.coursesList.layoutManager = LinearLayoutManager(this)
         binding.coursesList.adapter = adapter
         binding.coursesList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        val itemTouchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
 
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
+                val position = viewHolder.adapterPosition
+                itemModel.dropCourse(this@MainActivity, adapter.getCourses()[position])
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(binding.coursesList)
 
         itemModel.courses.observe(this){
             val productDiffUtilCallback =

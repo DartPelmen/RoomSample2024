@@ -1,10 +1,12 @@
 package edu.festu.ivankuznetsov.roomsample.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import edu.festu.ivankuznetsov.roomsample.database.CourseDB
 import edu.festu.ivankuznetsov.roomsample.database.entity.Course
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 class CourseViewModel : ViewModel() {
@@ -36,5 +38,17 @@ class CourseViewModel : ViewModel() {
         }
     }
 
-
+    fun dropCourse(context: Context, course: Course) {
+        CompletableFuture.runAsync({
+            Log.d(TAG, "DELETING")
+            CourseDB.getInstance(context)
+                .courseDao().delete(course)
+        },executorService).thenApply {
+            Log.d(TAG, "RE-FETCHING DATA")
+            getAll(context)
+        }
+    }
+    companion object{
+        private val TAG = CourseViewModel::class.java.simpleName
+    }
 }
